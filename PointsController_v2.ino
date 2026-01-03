@@ -3,6 +3,10 @@
 #include <Arduino.h>
 #include <Easing.h>
 
+const int layoutId = 0; // Frontington
+// const int layoutId = 1; // Fiddle yard
+// const int layoutId = 2; // Tutherside
+
 // Initialise the servo driver
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
@@ -187,8 +191,10 @@ private:
   }
 };
 
-// Set up an array of 9 uninstatiated Servo objects
-Servo *servos[10];
+// Set up an array of 16 uninstatiated Servo objects
+// It's 16 because the PCA9685 has 16 channels
+Servo *servos[16];
+int servoCount = 0;
 
 // Whether to use serial control
 bool useSerialControl;
@@ -204,16 +210,46 @@ void setup()
   Serial.begin(9600);
   Serial.println("Starting up...");
   // For my 9g servos the full 180 degree range is 100 to 500. YMMV.
-  servos[0] = new Servo(100, "Point B: Yard Entrance", 0, 2, 370, 450, 50, false);
-  servos[1] = new Servo(0, "Point C: Platform 2 / Loop", 1, 3, 310, 490, 75, false);
-  servos[2] = new Servo(1, "Signal 1: Up Platform 1 Start", 2, 4, 250, 340, 75, true);
-  servos[3] = new Servo(2, "Signal 2: Up Platform 2 Start", 3, 5, 270, 360, 75, true);
-  servos[4] = new Servo(6, "Point 6: Platform 1 / Goods Siding", 5, 6, 330, 450, 75, false);
-  servos[5] = new Servo(9, "Point 9: Platform 2 / Loop", 4, 7, 350, 480, 75, false);
-  servos[6] = new Servo(14, "Point 14A: Main / Sidings", 6, 8, 280, 430, 75, false);
-  servos[7] = new Servo(14, "Point 14B: Main / Sidings", 7, 8, 350, 520, 75, false);
-  servos[8] = new Servo(16, "Signal 16: Down Platform 2 Inner Home", 8, 10, 295, 360, 75, true);
-  servos[9] = new Servo(17, "Signal 17: Down Platform 1 Inner Home", 9, 11, 260, 380, 75, true);
+  switch (layoutId)
+  {
+  case 0: // Frontington
+    servos[servoCount++] = new Servo(0, "Point 0: Platform 2 / Loop", 1, 3, 310, 490, 75, false);
+    servos[servoCount++] = new Servo(1, "Signal 1: Up Platform 1 Start", 2, 4, 250, 340, 75, true);
+    servos[servoCount++] = new Servo(2, "Signal 2: Up Platform 2 Start", 3, 5, 270, 360, 75, true);
+    servos[servoCount++] = new Servo(6, "Point 6: Platform 1 / Goods Siding", 5, 6, 330, 450, 75, false);
+    servos[servoCount++] = new Servo(9, "Point 9: Platform 2 / Loop", 4, 7, 350, 480, 75, false);
+    servos[servoCount++] = new Servo(14, "Point 14A: Main / Sidings", 6, 8, 280, 430, 75, false);
+    servos[servoCount++] = new Servo(14, "Point 14B: Main / Sidings", 7, 8, 350, 520, 75, false);
+    servos[servoCount++] = new Servo(16, "Signal 16: Down Platform 2 Inner Home", 8, 10, 295, 360, 75, true);
+    servos[servoCount++] = new Servo(17, "Signal 17: Down Platform 1 Inner Home", 9, 11, 260, 380, 75, true);
+    break;
+
+  case 1: // Fiddle yard
+    servos[servoCount++] = new Servo(1, "Point 1: Yard Tutherside end", 1, 3, 100, 500, 75, false);
+    servos[servoCount++] = new Servo(2, "Point 2: Yard Frontington end", 2, 4, 100, 500, 75, false);
+    servos[servoCount++] = new Servo(3, "Point 3: Yard / Main line", 3, 5, 100, 500, 75, false);
+    servos[servoCount++] = new Servo(4, "Point 4: Main line / loop", 4, 6, 100, 500, 75, false);
+    break;
+
+  case 2: // Tutherside
+    servos[servoCount++] = new Servo(1, "Signal 1: Up Platform 1 Start", 1, 3, 100, 500, 75, true);
+    servos[servoCount++] = new Servo(2, "Signal 2: Up Platform 2 Start", 2, 4, 100, 500, 75, true);
+    servos[servoCount++] = new Servo(3, "Signal 3: Up Frontington Advance Start", 3, 5, 100, 500, 75, true);
+    servos[servoCount++] = new Servo(4, "Signal 4: Up Garth Bridge Advance Start", 4, 6, 100, 500, 75, true);
+    servos[servoCount++] = new Servo(7, "Point 7A: Platform 2 headshunt", 5, 7, 100, 500, 75, false);
+    servos[servoCount++] = new Servo(7, "Point 7B: Loop headshunt", 6, 8, 100, 500, 75, false);
+    servos[servoCount++] = new Servo(10, "Point 10: Loop / Goods siding", 7, 9, 100, 500, 75, false);
+    servos[servoCount++] = new Servo(13, "Point 13A: Loop / Headshunt", 8, 10, 100, 500, 75, false);
+    servos[servoCount++] = new Servo(13, "Point 13B: Platform 2 / Loop", 9, 11, 100, 500, 75, false);
+    servos[servoCount++] = new Servo(15, "Point 15: Platform 2 / Platform 1", 10, 12, 100, 500, 75, false);
+    servos[servoCount++] = new Servo(17, "Point 17: Garth Bridge / Frontington", 11, 13, 100, 500, 75, false);
+    servos[servoCount++] = new Servo(22, "Signal 22: Down Platform 1 Inner Home", 12, 14, 100, 500, 75, true);
+    servos[servoCount++] = new Servo(23, "Signal 23: Down Platform 2 Inner Home", 13, 15, 100, 500, 75, true);
+    break;
+
+  default:
+    break;
+  }
 
   useSerialControl = true;
 }
@@ -233,12 +269,12 @@ void loop()
       int lastUnderscore = command.lastIndexOf("_");
       String id = command.substring(firstUnderscore + 1, lastUnderscore);
       String state = command.substring(lastUnderscore + 1);
-      for (auto servo : servos)
+      for (int i = 0; i < servoCount; i++)
       {
-        if (servo->getId() == id.toInt())
+        if (servos[i]->getId() == id.toInt())
         {
-          Serial.println(servo->getId());
-          servo->setIsThrown(state == "ON");
+          Serial.println(servos[i]->getId());
+          servos[i]->setIsThrown(state == "ON");
         }
       }
     }
@@ -251,24 +287,24 @@ void loop()
     // }
     if (command.equals("STATUS"))
     {
-      for (auto servo : servos)
+      for (int i = 0; i < servoCount; i++)
       {
         // Serial.println(servo->getId() + servo->getIsThrown());
-        servo->getStatus();
+        servos[i]->getStatus();
       }
     }
   }
 
   // Update each servo
-  for (auto servo : servos)
+  for (int i = 0; i < servoCount; i++)
   {
     if (useSerialControl)
     {
-      servo->updateBySerial();
+      servos[i]->updateBySerial();
     }
     else
     {
-      servo->update();
+      servos[i]->update();
     }
     // Separate serial outputs
     // Serial.print(" ");
